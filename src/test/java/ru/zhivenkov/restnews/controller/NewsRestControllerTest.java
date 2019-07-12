@@ -87,41 +87,62 @@ public class NewsRestControllerTest {
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-        //this.newsRepository.deleteAllInBatch();
-        //this.userRepository.deleteAllInBatch();
+        this.newsRepository.deleteAllInBatch();
+        this.userRepository.deleteAllInBatch();
 
         this.user = userRepository.save(new User(userName));
         this.newsList.add(newsRepository.save(new News("test title", "test news", new Date(), this.user)));
-        this.newsList.add(newsRepository.save(new News("test title2", "test news2", new Date(), this.user)));
+
+
     }
+
+
+
     @Test
     public void userNotFound() throws Exception {
-        mockMvc.perform(post("/100500")
+        this.mockMvc.perform(post("/news/100500")
                 .content(this.json(new News()))
                 .contentType(contentType))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isMethodNotAllowed());
     }
-    @Test
-    public void add() {
-    }
+
 
     @Test
     public void getById() throws Exception {
-        System.out.println(this.newsList.get(0).getId());
-        mockMvc.perform(get("/"  + this.newsList.get(0).getId() ) )
+        this.mockMvc.perform(get("/news/"  + this.newsList.get(0).getId() ) )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
                 .andExpect(jsonPath("$.id").value(this.newsList.get(0).getId()))
-                .andExpect(jsonPath("$.creator_id").value(this.user.getId()));
+                .andExpect(jsonPath("$.title").value(this.newsList.get(0).getTitle()));
+    }
+
+
+
+    @Test
+    public void getAll() throws Exception  {
+        this.mockMvc.perform(get("/news" ) )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$[0].id").value(this.newsList.get(0).getId()))
+                .andExpect(jsonPath("$[0].title").value(this.newsList.get(0).getTitle()));
+    }
+
+
+
+
+
+    @Test
+    public void add() {
+
+        this.newsList.add(newsRepository.save(new News("test title2", "test news2", new Date(), this.user)));
     }
 
     @Test
-    public void detById() {
+    public void delById() {
+        this.newsRepository.deleteById(this.newsList.get(0).getId());
+       // this.newsRepository.deleteById(this.newsList.get(1).getId());
+        this.userRepository.deleteById(this.user.getId());
 
-    }
-
-    @Test
-    public void getAll() {
     }
 
     protected String json(Object o) throws IOException {
