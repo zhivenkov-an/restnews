@@ -87,8 +87,8 @@ public class NewsRestControllerTest {
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-        this.newsRepository.deleteAllInBatch();
-        this.userRepository.deleteAllInBatch();
+       // this.newsRepository.deleteAllInBatch();
+       // this.userRepository.deleteAllInBatch();
 
         this.user = userRepository.save(new User(userName));
         this.newsList.add(newsRepository.save(new News("test title", "test news", new Date(), this.user)));
@@ -109,11 +109,11 @@ public class NewsRestControllerTest {
 
     @Test
     public void getById() throws Exception {
-        this.mockMvc.perform(get("/news/"  + this.newsList.get(0).getId() ) )
+        this.mockMvc.perform(get("/news/1" ) )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.id").value(this.newsList.get(0).getId()))
-                .andExpect(jsonPath("$.title").value(this.newsList.get(0).getTitle()));
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.title").value("How much money earned M.Galkin"));
     }
 
 
@@ -123,8 +123,8 @@ public class NewsRestControllerTest {
         this.mockMvc.perform(get("/news" ) )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$[0].id").value(this.newsList.get(0).getId()))
-                .andExpect(jsonPath("$[0].title").value(this.newsList.get(0).getTitle()));
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].title").value("How much money earned M.Galkin"));
     }
 
 
